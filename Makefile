@@ -1,5 +1,5 @@
-CXX = g++.exe
-LD = g++.exe
+CXX = g++
+LD = g++
 
 INC = -Iinclude
 CFLAGS = -Wall -std=c++11 -g -O2
