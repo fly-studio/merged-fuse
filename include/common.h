@@ -15,11 +15,9 @@
 #endif
 
 #ifdef __CYGWIN__
-    // windows code goes here
     #define FUSE_USE_VERSION 30
-
 #else
-
+    #define FUSE_USE_VERSION 28
 #endif
 
 
