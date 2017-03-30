@@ -117,7 +117,7 @@ vim /the/src/dir/1-merge-.zip
 ```json
 [
     {
-        "path": "1.zip"
+        "path": "1.zip",
         "replaces": [
             {
                 "offset": 10, //0xa
