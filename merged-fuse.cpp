@@ -77,7 +77,7 @@ static concat* create_concat(int fd, const char* path, bool strict = true)
         c->parsing(strict);
     } catch(exception &e)
     {
-        fprintf(stderr, e.what());
+        debug_print("parsing error: %s", e.what());
         errno = EINVAL;
     }
     unlock();
