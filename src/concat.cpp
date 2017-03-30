@@ -219,8 +219,8 @@ int concat::parseBinary(bool strict /*= true*/)
     //read chunks count
     read_buffer(&chunks_count, 2);
 
-    if (chunks_count > 50)
-        return throw_exception("the chunks is too much: > 50");
+ //   if (chunks_count > 50)
+ //       return throw_exception("the chunks is too much: > 50");
 
     for(int i = 0; i < chunks_count; i++) {
 
