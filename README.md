@@ -6,11 +6,11 @@ when system read the file, it output the merged/replaced content.
 **Example**
 
 1.txt
-```
+```text
 12345678
 ```
 2.txt
-```
+```text
 abcdefghi
 ```
 
@@ -19,7 +19,7 @@ Make a file named `1-merged-.txt`,
 `-merged-` is a special words in the file name
 
 JSON format
-```
+```json
 [
     {
         "path": "1.txt"
@@ -31,7 +31,7 @@ JSON format
 ```
 
 When you read the `cat 1-merged-.txt`, System output:
-```
+```text
 12345678abcdefghi
 ```
 
@@ -41,8 +41,8 @@ So it can virtual merges so many Big Size files. eg: `mkv, mp4`
 
 
 # Install
-It needs GCC 4.9, [Install GCC 4.9 in CentOS 6/7](#Install_GCC_4.9_in_CentOS 6)
-```
+It needs GCC 4.9, [Install GCC 4.9 in CentOS 6/7](#install-gcc-49-in-centos-67)
+```bash
 cd merged-fuse
 make
 mv bin/merged-fuse /usr/bin/
@@ -54,7 +54,7 @@ It's a FUSE plugin, so it uses two directories:
 - source dir
 - be mounted dir
 
-```
+```bash
 mkdir /the/src/dir
 mkdir /the/mounted/dir
 ```
@@ -64,11 +64,11 @@ You can **Write** your `-merged-` file in source dir
 And **Read** your `-merged-` file in mounted dir after `merged-fuse`
 
 ## Run
-```
+```bash
 merged-fuse /the/src/dir/ /the/mount/dir/
 ```
 ## Stop
-```
+```bash
 umount /the/mount/dir/
 ```
 
@@ -76,11 +76,11 @@ umount /the/mount/dir/
 
 ## MERGE
 
-```
+```bash
 vim /the/src/dir/game.of.thrones-merge-.mp4
 ```
 
-```
+```json
 [
     {
         "path": "1.mp4"
@@ -94,7 +94,7 @@ vim /the/src/dir/game.of.thrones-merge-.mp4
 ]
 ```
 ## REPLACE
-```
+```bash
 vim /the/src/dir/1-merge-.zip
 ```
 
@@ -114,7 +114,7 @@ vim /the/src/dir/1-merge-.zip
 
     If **BASE64 DECODED Content**'s size is less than **length**, return error.
 
-```
+```json
 [
     {
         "path": "1.zip"
@@ -138,7 +138,7 @@ vim /the/src/dir/1-merge-.zip
 ```
 
 # Install GCC 4.9 in CentOS 6/7
-```
+```bash
 $ yum install centos-release-scl-rh
 $ yum install devtoolset-3-binutils devtoolset-3-gcc devtoolset-3-gcc-c++
 
