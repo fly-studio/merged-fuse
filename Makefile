@@ -12,7 +12,7 @@ OUT = bin/merged-fuse
 DEP = 
 OBJS = $(OBJDIR)/merged-fuse.o $(OBJDIR)/base64.o $(OBJDIR)/concat.o
 
-edit: $(OBJS)
+all: $(OBJS)
 	$(LD) $(LIBDIR) -o $(OUT) $(OBJS)  $(LDFLAGS) $(LIB)
 
 $(OBJDIR)/merged-fuse.o: merged-fuse.cpp include/common.h

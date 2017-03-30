@@ -13,6 +13,7 @@
 #include <algorithm>
 #include "json.hpp"
 #include "base64.h"
+#include "int128.hpp"
 
 using namespace std;
 using json = nlohmann::json;
@@ -49,7 +50,7 @@ void concat::setFile(int fd, const char *path)
     }
 
     file_size = stbuf.st_size;
-    debug_print("set file %s: %d\n", path, file_size);
+    debug_print("set file %s: %ld\n", path, file_size);
 }
 
 long long concat::read(void * buf, off_t offset, size_t count)
@@ -68,7 +69,7 @@ long long concat::read(void * buf, off_t offset, size_t count)
     {
         ssize_t rv = pread(it->file_descriptor, buf, it->file_size - offset, offset);
         if (rv == it->file_size - offset) {
-			buf += rv;
+			buf = (char*)buf + rv;
 			offset = 0;
 			count -= rv;
 			bytes_read += rv;
@@ -129,7 +130,7 @@ void concat::replace(void * buf, off_t offset, size_t count)
         {
             off_t ws = std::max(0l, _s - s); //write start B9 B10 B11
             off_t rs = std::max(0l, s - _s); //read start B3 B4 B5
-            memcpy(buf + ws, it->content + rs, len);
+            memcpy((char*)buf + ws, it->content + rs, len);
         }
     }
 
@@ -192,7 +193,7 @@ int concat::parsing()
  */
 int concat::parseBinary()
 {
-    debug_print("parsing binary: %s\n", file_path);
+    debug_print("parsing binary: %s\n", file_path.c_str());
     unsigned short path_length = 0;
     unsigned short chunks_count = 0;
     unsigned short replaced_count = 0;
@@ -330,7 +331,7 @@ int concat::parseJson()
     //} catch(exception& e) {
     //   return throw_exception(e.what());
     //}
-    debug_print("%d merged files\n", j.size());
+    debug_print("%ld merged files\n", j.size());
     for (json::iterator ct = j.begin(); ct != j.end(); ++ct) {
         chunk c;
 
@@ -398,7 +399,7 @@ int concat::parseJson()
                     r.content = str;
 
                     replaces.push_back(r);
-                    debug_print("replaced %d, %d\n", replaced_offset, content_length);
+                    debug_print("replaced %lld, %d\n", replaced_offset, content_length);
                 }
             }
 

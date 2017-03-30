@@ -1,4 +1,4 @@
-#include "include/common.h"
+#include "common.h"
 
 
 #include <fuse/fuse.h>
@@ -14,7 +14,8 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <unordered_map>
-#include "include/concat.h"
+#include "concat.h"
+
 
 using namespace std;
 

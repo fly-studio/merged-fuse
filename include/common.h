@@ -1,9 +1,10 @@
 #ifndef COMMON_H_INCLUDED
 #define COMMON_H_INCLUDED
 
-#define debug_print(fmt, ...) \
+#define debug_print(fmt, args...) \
         do { fprintf(stderr, "%s:%d:%s(): " fmt, __FILE__, \
-                                __LINE__, __func__, __VA_ARGS__); } while (0)
+                                __LINE__, __func__, ##args); } while (0)
+
 
 #ifdef WINDOWS
     #include <direct.h>
@@ -13,7 +14,13 @@
     #define GetCurrentDir getcwd
 #endif
 
-#define FUSE_USE_VERSION 30
-#define _FILE_OFFSET_BITS 64
+#ifdef __CYGWIN__
+    // windows code goes here
+    #define FUSE_USE_VERSION 30
+    #define _FILE_OFFSET_BITS 64
+#else
+
+#endif
+
 
 #endif // COMMON_H_INCLUDED
