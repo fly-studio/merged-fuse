@@ -1,20 +1,22 @@
 # Introduce
-It's a fuse plugin, and it can virtual merges files, and virtual replaces  bytes.
+It's a fuse plugin, and it can virtual merges files, and virtual replaces bytes.
 
-when system read the file, it output the merged/replaced content.
+when system read this file, it output the merged/replaced content with many files that you set.
+
+**It's not a really merged**, but it can output the merged files content when you use `fread pread...` in linux
 
 **Example**
 
-1.txt
+**/the/src/dir/**1.txt
 ```text
 12345678
 ```
-2.txt
+**/the/src/dir/**2.txt
 ```text
 abcdefghi
 ```
 
-Make a file named `1-merged-.txt`, 
+Make a file named `/the/mounted/dir/1-merged-.txt`, 
 
 `-merged-` is a special words in the file name, and the content is
 
@@ -30,15 +32,16 @@ Make a file named `1-merged-.txt`,
 ]
 ```
 
-When `cat 1-merged-.txt`, output:
+`cat /the/mounted/dir/1-merged-.txt`, output:
 ```text
 12345678abcdefghi
 ```
 
-So it virtual merges two files, and used a json text, then take few disk space.
+So it virtual merges two files, with a json, and output the merged content.
 
-So it can virtual merges so many Big Size files. eg: `mkv, mp4`
+> Of course, this plugin builded for **BIG SIZE** files. eg: `mkv, mp4`,
 
+> Or so many **BIG SIZE** copies with a few difference. eg: program copies(with different biz channel ID) 
 
 # Install
 It needs GCC 4.9, [Install GCC 4.9 in CentOS 6/7](#install-gcc-49-in-centos-67)
@@ -71,7 +74,7 @@ merged-fuse /the/src/dir/ /the/mount/dir/
 ```
 ## Stop
 ```bash
-umount /the/mount/dir/
+umount /the/mounted/dir/
 ```
 
 # Methods
@@ -95,6 +98,12 @@ vim /the/src/dir/game.of.thrones-merge-.mp4
     }
 ]
 ```
+Read
+
+```bash
+cat /the/mounted/dir/game.of.thrones-merge-.mp4
+```
+
 ## REPLACE
 ```bash
 vim /the/src/dir/1-merge-.zip
@@ -122,7 +131,7 @@ vim /the/src/dir/1-merge-.zip
         "path": "1.zip",
         "replaces": [
             {
-                "offset": 10, //0xa
+                "offset": 10,
                 "length": 4,
                 "content": "NDMyMQ=="
             },
@@ -137,6 +146,11 @@ vim /the/src/dir/1-merge-.zip
         "path": "2.text"
     }
 ]
+```
+Read
+
+```bash
+cat /the/mounted/dir/1-merge-.zip
 ```
 
 # Install GCC 4.9 in CentOS 6/7
