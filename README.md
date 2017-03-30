@@ -16,9 +16,9 @@ abcdefghi
 
 Make a file named `1-merged-.txt`, 
 
-`-merged-` is a special words in the file name
+`-merged-` is a special words in the file name, and the content is
 
-JSON format
+**JSON format**
 ```json
 [
     {
@@ -30,7 +30,7 @@ JSON format
 ]
 ```
 
-When you read the `cat 1-merged-.txt`, System output:
+When `cat 1-merged-.txt`, output:
 ```text
 12345678abcdefghi
 ```
@@ -43,6 +43,8 @@ So it can virtual merges so many Big Size files. eg: `mkv, mp4`
 # Install
 It needs GCC 4.9, [Install GCC 4.9 in CentOS 6/7](#install-gcc-49-in-centos-67)
 ```bash
+yum install fuse fuse-devel
+
 cd merged-fuse
 make
 mv bin/merged-fuse /usr/bin/
