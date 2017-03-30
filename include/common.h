@@ -16,6 +16,7 @@
 
 #ifdef __CYGWIN__
     #define FUSE_USE_VERSION 30
+    #define _FILE_OFFSET_BITS 64
 #else
     #define FUSE_USE_VERSION 28
 #endif

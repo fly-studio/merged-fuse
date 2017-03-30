@@ -226,6 +226,250 @@ static int m_getattr(const char *path, struct stat *stbuf)
 	return 0;
 }
 
+static int m_mknod(const char *path, mode_t mode, dev_t dev)
+{
+	int rv;
+	char fpath[PATH_MAX];
+
+	snprintf(fpath, sizeof(fpath), "%s/%s", src_dir, path);
+
+	rv = mknod(fpath, mode, dev);
+	if (rv < 0) {
+		return -errno;
+	}
+	return rv;
+}
+
+static int m_mkdir(const char *path, mode_t mode)
+{
+	int rv;
+	char fpath[PATH_MAX];
+
+	snprintf(fpath, sizeof(fpath), "%s/%s", src_dir, path);
+
+	rv = mkdir(fpath, mode);
+	if (rv < 0) {
+		return -errno;
+	}
+	return rv;
+}
+
+static int m_unlink(const char *path)
+{
+	int rv;
+	char fpath[PATH_MAX];
+
+	snprintf(fpath, sizeof(fpath), "%s/%s", src_dir, path);
+
+	rv = unlink(fpath);
+	if (rv < 0) {
+		return -errno;
+	}
+	return rv;
+}
+
+static int m_rmdir(const char *path)
+{
+	int rv;
+	char fpath[PATH_MAX];
+
+	snprintf(fpath, sizeof(fpath), "%s/%s", src_dir, path);
+
+	rv = rmdir(fpath);
+	if (rv < 0) {
+		return -errno;
+	}
+	return rv;
+}
+
+static int m_symlink(const char *path, const char * link)
+{
+	int rv;
+	char flink[PATH_MAX];
+
+	snprintf(flink, sizeof(flink), "%s/%s", src_dir, path);
+
+	rv = symlink(path, flink);
+	if (rv < 0) {
+		return -errno;
+	}
+	return rv;
+}
+
+static int m_rename(const char *path, const char *topath)
+{
+	int rv;
+	char fpath[PATH_MAX];
+	char ftopath[PATH_MAX];
+
+	snprintf(fpath, sizeof(fpath), "%s/%s", src_dir, path);
+	snprintf(ftopath, sizeof(ftopath), "%s/%s", src_dir, topath);
+
+	rv = rename(fpath, ftopath);
+	if (rv < 0) {
+		return -errno;
+	}
+	return rv;
+}
+
+static int m_link(const char *path, const char *topath)
+{
+	int rv;
+	char fpath[PATH_MAX];
+	char ftopath[PATH_MAX];
+
+	snprintf(fpath, sizeof(fpath), "%s/%s", src_dir, path);
+	snprintf(ftopath, sizeof(ftopath), "%s/%s", src_dir, topath);
+
+	rv = link(fpath, ftopath);
+	if (rv < 0) {
+		return -errno;
+	}
+	return rv;
+}
+
+static int m_chmod(const char *path, mode_t mode)
+{
+	int rv;
+	char fpath[PATH_MAX];
+
+	snprintf(fpath, sizeof(fpath), "%s/%s", src_dir, path);
+
+	rv = chmod(fpath, mode);
+	if (rv < 0) {
+		return -errno;
+	}
+	return rv;
+}
+
+static int m_chown(const char *path, uid_t uid, gid_t gid)
+{
+	int rv;
+	char fpath[PATH_MAX];
+
+	snprintf(fpath, sizeof(fpath), "%s/%s", src_dir, path);
+
+	rv = chown(fpath, uid, gid);
+	if (rv < 0) {
+		return -errno;
+	}
+	return rv;
+}
+
+static int m_truncate(const char *path, off_t nsize)
+{
+	int rv;
+	char fpath[PATH_MAX];
+
+	snprintf(fpath, sizeof(fpath), "%s/%s", src_dir, path);
+
+	rv = truncate(fpath, nsize);
+	if (rv < 0) {
+		return -errno;
+	}
+	return rv;
+}
+
+static int m_utime(const char *path, struct utimbuf * buf)
+{
+	int rv;
+	char fpath[PATH_MAX];
+
+	snprintf(fpath, sizeof(fpath), "%s/%s", src_dir, path);
+
+	rv = utime(fpath, buf);
+	if (rv < 0) {
+		return -errno;
+	}
+	return rv;
+}
+
+static int m_access(const char *path, int mask)
+{
+	int rv;
+	char fpath[PATH_MAX];
+
+	snprintf(fpath, sizeof(fpath), "%s/%s", src_dir, path);
+
+	rv = access(fpath, mask);
+
+	if (rv < 0) {
+		return -errno;
+	}
+
+	return rv;
+}
+
+static int m_create(
+	const char *path, mode_t mode, struct fuse_file_info *fi)
+{
+	int fd = 0;
+	char fpath[PATH_MAX];
+
+	snprintf(fpath, sizeof(fpath), "%s/%s", src_dir, path);
+
+	fd = creat(fpath, mode);
+
+	if (fd < 0) {
+		return -errno;
+	}
+
+	fi->fh = fd;
+
+	return 0;
+}
+
+static int m_readlink(const char *path, char *link, size_t size)
+{
+	int rv = 0;
+	char fpath[PATH_MAX];
+
+	snprintf(fpath, sizeof(fpath), "%s/%s", src_dir, path);
+
+	rv = readlink(fpath, link, size - 1);
+	if (rv < 0) {
+		rv = -errno;
+	} else {
+		link[rv] = '\0';
+		rv = 0;
+	}
+
+	return rv;
+}
+
+static int m_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
+			    off_t offset, struct fuse_file_info *fi)
+{
+	int retstat = 0;
+	DIR *dp;
+	struct dirent *de;
+	char fpath[PATH_MAX];
+
+	snprintf(fpath, sizeof(fpath), "%s/%s", src_dir, path);
+
+	dp = opendir(fpath);
+
+	if (!dp) {
+		return -errno;
+	}
+
+	de = readdir(dp);
+	if (de == 0) {
+		closedir(dp);
+		return -errno;
+	}
+
+	do {
+		if (filler(buf, de->d_name, NULL, 0) != 0) {
+			closedir(dp);
+			return -ENOMEM;
+		}
+	} while ((de = readdir(dp)) != NULL);
+
+	closedir(dp);
+
+	return retstat;
+}
 
 static void usage()
 {
@@ -263,25 +507,25 @@ int main(int argc, char **argv) {
 
 
 	m_opers.getattr     = m_getattr;
-	//m_opers.readlink   = m_readlink;
-	//m_opers.mknod      = m_mknod;
-	//m_opers.mkdir      = m_mkdir;
-	//m_opers.unlink     = m_unlink;
-	//m_opers.rmdir      = m_rmdir;
-	//m_opers.symlink    = m_symlink;
-	//m_opers.rename     = m_rename;
-	//m_opers.link       = m_link;
-	//m_opers.chmod      = m_chmod;
-	//m_opers.chown      = m_chown;
-	//m_opers.truncate   = m_truncate;
-	//m_opers.utime      = m_utime;
+	m_opers.readlink   = m_readlink;
+	m_opers.mknod      = m_mknod;
+	m_opers.mkdir      = m_mkdir;
+	m_opers.unlink     = m_unlink;
+	m_opers.rmdir      = m_rmdir;
+	m_opers.symlink    = m_symlink;
+	m_opers.rename     = m_rename;
+	m_opers.link       = m_link;
+	m_opers.chmod      = m_chmod;
+	m_opers.chown      = m_chown;
+	m_opers.truncate   = m_truncate;
+	m_opers.utime      = m_utime;
 	m_opers.open		= m_open;
 	m_opers.read		= m_read;
 	m_opers.write      = m_write;
 	m_opers.release    = m_release;
-	//m_opers.readdir	= m_readdir;
-	//m_opers.access     = m_access;
-	//m_opers.create     = m_create;
+	m_opers.readdir	= m_readdir;
+	m_opers.access     = m_access;
+	m_opers.create     = m_create;
 
 	return fuse_main(argc - 1, argv_, &m_opers, NULL);
 }
