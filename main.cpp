@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-#include "concat.h"
-#include "common.h"
+#include "include/concat.h"
+#include "include/common.h"
 
 /*
 int main()

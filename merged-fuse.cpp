@@ -1,4 +1,5 @@
-#include "common.h"
+#include "include/common.h"
+
 
 #include <fuse/fuse.h>
 #include <stdio.h>
@@ -13,7 +14,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <unordered_map>
-#include "concat.h"
+#include "include/concat.h"
 
 using namespace std;
 
@@ -109,6 +110,7 @@ static int remove_concat(int fd)
         open_files.erase(it);
     }
     unlock();
+    return true;
 }
 
 static concat* get_concat(int fd)
