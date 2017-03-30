@@ -85,9 +85,9 @@ umount /the/mounted/dir/
 # Methods
 
 ## MERGE
-
+Write
 ```bash
-vim /the/src/dir/game.of.thrones-merge-.mp4
+/the/src/dir/game.of.thrones-merge-.mp4
 ```
 
 ```json
@@ -106,12 +106,13 @@ vim /the/src/dir/game.of.thrones-merge-.mp4
 Read
 
 ```bash
-cat /the/mounted/dir/game.of.thrones-merge-.mp4
+/the/mounted/dir/game.of.thrones-merge-.mp4
 ```
 
 ## REPLACE
+Write
 ```bash
-vim /the/src/dir/1-merge-.zip
+/the/src/dir/1-merge-.zip
 ```
 
 - offset [long long]: may ±, current file's offset,
@@ -155,7 +156,7 @@ vim /the/src/dir/1-merge-.zip
 Read
 
 ```bash
-cat /the/mounted/dir/1-merge-.zip
+/the/mounted/dir/1-merge-.zip
 ```
 
 # Install GCC 4.9 in CentOS 6/7
