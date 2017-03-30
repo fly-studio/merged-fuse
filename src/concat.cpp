@@ -51,7 +51,7 @@ void concat::setFile(int fd, const char *path)
     }
 
     file_size = stbuf.st_size;
-    debug_print("set file %s: %ld\n", path, file_size);
+    debug_print("set file: %s %ld B\n", path, file_size);
 }
 
 long long concat::read(void * buf, off_t offset, size_t count)
@@ -152,9 +152,10 @@ int concat::parsing(bool strict/* = true*/)
 		fp = fopen(file_path.c_str(), "r");
 //	}
 
-    buffer = new char[file_size];
+    buffer = new char[file_size + 1];
     fread(buffer, sizeof(char), file_size, fp);
 	fclose(fp);
+	buffer[file_size] = '\0';
     buffer_offset = buffer;
 
     int ret = 0;
