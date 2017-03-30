@@ -1,22 +1,27 @@
 # Introduce
 It's a fuse plugin, and it can virtual merges files, and virtual replaces bytes.
 
-when system read this file, it output the merged/replaced content with many files that you set.
+when system read this file, it output the merged/replaced content of many really files that you set.
 
-**It's not a really merged**, but it can output the merged files content when you use `fread pread...` in linux
+But it's not a really merged file, it only output the merged content when you use `fread pread, even md5...` in linux.
+
+So, you can save so many disk space.
 
 **Example**
 
-**/the/src/dir/**1.txt
+`/the/src/dir/`1.txt
+
 ```text
 12345678
 ```
-**/the/src/dir/**2.txt
+
+`/the/src/dir/`2.txt
+
 ```text
 abcdefghi
 ```
 
-Make a file named `/the/mounted/dir/1-merged-.txt`, 
+Make a file named `/the/mounted/dir/`1-merged-.txt, 
 
 `-merged-` is a special words in the file name, and the content is
 
