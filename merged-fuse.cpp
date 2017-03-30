@@ -224,7 +224,7 @@ static int m_getattr(const char *path, struct stat *stbuf)
 
 	if (is_merged_file(path)) {
         debug_print("get file attr: %s \n", fpath);
-        concat * c = create_concat(0, path, false);
+        concat * c = create_concat(0, fpath, false);
         if (c->valid())
             stbuf->st_size = c->getMergedSize();
 		delete c;
