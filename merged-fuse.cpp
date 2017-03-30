@@ -151,6 +151,7 @@ static int m_open(const char *path, struct fuse_file_info *fi)
 	fi->fh = fd;
 
 	if (is_merged_file(path)) {
+        debug_print("open file: %s\n", fpath);
         concat* c = create_concat(fd, fpath);
         if (!c->valid()) //normal file
             return 0;
@@ -170,6 +171,7 @@ static int m_write(
 	int rv = 0;
 
 	if (is_merged_file(path)) {
+        debug_print("write file: [%ld-%ld] %s \n", offset, size, path);
         concat * c = get_concat(fi->fh);
         if (c && c->valid())
             return -EINVAL;
@@ -187,6 +189,7 @@ static int m_read(const char *path, char *buf, size_t size, off_t offset,
 	int rv = 0;
 
 	if (is_merged_file(path)) {
+        debug_print("read file: [%ld-%ld] %s \n", offset, size, path);
         concat * c = get_concat(fi->fh);
         if (c && c->valid())
             return read_concat(fi->fh, buf, size, offset);
@@ -202,6 +205,7 @@ static int m_read(const char *path, char *buf, size_t size, off_t offset,
 static int m_release(const char * path, struct fuse_file_info * fi)
 {
 	if (is_merged_file(path)) {
+        debug_print("close file: %s \n", path);
 		remove_concat(fi->fh);
 	}
     close(fi->fh);
@@ -219,6 +223,7 @@ static int m_getattr(const char *path, struct stat *stbuf)
 		return -errno;
 
 	if (is_merged_file(path)) {
+        debug_print("get file attr: %s \n", fpath);
         concat * c = create_concat(0, path, false);
         if (c->valid())
             stbuf->st_size = c->getMergedSize();
@@ -501,6 +506,8 @@ int main(int argc, char **argv) {
 		snprintf(src_dir, sizeof(src_dir), "%s/%s",
 			 cwd, argv[1]);
 	}
+
+	debug_print("mounting src_dir: %s\n", src_dir);
 
 	pthread_mutex_init(&the_lock, NULL);
 
