@@ -27,6 +27,7 @@ concat::concat()
     merged_size = 0;
     file_path = "";
     file_descriptor = -1;
+    is_valid = false;
     //ctor
 }
 
@@ -137,7 +138,7 @@ void concat::replace(void * buf, off_t offset, size_t count)
 }
 
 
-int concat::parsing()
+int concat::parsing(bool strict/* = true*/)
 {
     if (file_path.empty() || file_size < 2) {
         return throw_exception("File content invalid");
@@ -157,11 +158,13 @@ int concat::parsing()
     buffer_offset = buffer;
 
     int ret = 0;
+    is_valid = false;
     try{
         if (buffer[0] == '[' && buffer[file_size - 1] == ']') // json
-            ret = parseJson();
+            ret = parseJson(strict);
         else
-            ret = parseBinary();
+            ret = parseBinary(strict);
+        if (ret > 0) is_valid = true;
     } catch(exception &e){
         throw_exception(e.what());
     }
@@ -191,7 +194,7 @@ int concat::parsing()
  *
  *
  */
-int concat::parseBinary()
+int concat::parseBinary(bool strict /*= true*/)
 {
     debug_print("parsing binary: %s\n", file_path.c_str());
     unsigned short path_length = 0;
@@ -253,6 +256,12 @@ int concat::parseBinary()
                 read_buffer(&replaced_offset, 8);
                 read_buffer(&content_length, 2);
 
+                if (!strict)
+                {
+                    buffer_offset += content_length;
+                    continue;
+                }
+
                 if (content_length > 1024)
                     return throw_exception("replaced content is too long: > 1024B");
                 else if (content_length == 0)
@@ -309,7 +318,7 @@ int concat::parseBinary()
  *    }
  * ]
  */
-int concat::parseJson()
+int concat::parseJson(bool strict /*= true*/)
 {
     debug_print("parsing json: %s\n", file_path.c_str());
     int content_length = 0;
@@ -353,6 +362,9 @@ int concat::parseJson()
         if (stat(path.c_str(), &stbuf) == 0) {
             merged_size += stbuf.st_size;
             c.file_size = stbuf.st_size;
+
+            if (!strict)
+                continue;
 
             auto prs = cv.find("replaces");
             if (prs != cv.end())
@@ -419,6 +431,7 @@ void concat::removeAll()
     file_size = 0;
     merged_size = 0;
     file_descriptor = -1;
+    is_valid = false;
     if (0 != buffer) delete []buffer;
     buffer = 0;
     buffer_offset = 0;

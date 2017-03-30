@@ -27,12 +27,13 @@ class concat
         virtual ~concat();
 
         void setFile(int, const char *);
-        int parsing();
+        int parsing(bool strict = true);
         void removeAll();
 
         off_t getMergedSize() {return merged_size;};
         int getFileDescriptor() {return file_descriptor;};
         string getFilePath() {return file_path;};
+        bool valid() {return is_valid;};
 
         long long read(void * buf, off_t offset, size_t count);
     public:
@@ -45,8 +46,8 @@ class concat
         template<typename... Args> bool throw_exception(const char *, Args... args);
         void read_buffer(void * target, int len);
         void replace(void * buf, off_t offset, size_t count);
-        int parseBinary();
-        int parseJson();
+        int parseBinary(bool strict = true);
+        int parseJson(bool strict = true);
 
         string file_path;
         int file_descriptor;
@@ -54,6 +55,7 @@ class concat
         char * buffer_offset;
         off_t file_size;
         off_t merged_size;
+        bool is_valid;
 };
 
 #endif // CONCAT_H

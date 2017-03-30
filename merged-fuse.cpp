@@ -67,21 +67,18 @@ static int is_merged_file(const char * path)
 	return (strstr(basename(fpath), "-merged-") != 0);
 }
 
-static concat* create_concat(int fd, const char* path)
+static concat* create_concat(int fd, const char* path, bool strict = true)
 {
     lock();
     concat *c = new concat();
     try
     {
         c->setFile(fd, path);
-        c->parsing();
+        c->parsing(strict);
     } catch(exception &e)
     {
-        delete c;
         fprintf(stderr, e.what());
         errno = EINVAL;
-        unlock();
-        return nullptr;
     }
     unlock();
     return c;
@@ -135,7 +132,7 @@ static int read_concat(int fd, void *buf, off_t offset, size_t count)
     if (nullptr == c)
         return -errno;
 
-    return c->read(buf, offset, count);
+    return c->valid() ? c->read(buf, offset, count) : -EINVAL;
 }
 
 static int m_open(const char *path, struct fuse_file_info *fi)
@@ -155,10 +152,13 @@ static int m_open(const char *path, struct fuse_file_info *fi)
 
 	if (is_merged_file(path)) {
         concat* c = create_concat(fd, fpath);
-        if (nullptr == c)
-            return -errno;
+        if (!c->valid()) //normal file
+            return 0;
         if (!insert_concat(fd, c))
+        {
+            delete c;
             return -errno;
+        }
 	}
 	return 0;
 }
@@ -170,13 +170,14 @@ static int m_write(
 	int rv = 0;
 
 	if (is_merged_file(path)) {
-		return -EINVAL;
-	} else {
-		rv = pwrite(fi->fh, buf, size, offset);
-		if (rv < 0) {
-			return -errno;
-		}
+        concat * c = get_concat(fi->fh);
+        if (c && c->valid())
+            return -EINVAL;
 	}
+    rv = pwrite(fi->fh, buf, size, offset);
+    if (rv < 0) {
+        return -errno;
+    }
 	return rv;
 }
 
@@ -186,13 +187,15 @@ static int m_read(const char *path, char *buf, size_t size, off_t offset,
 	int rv = 0;
 
 	if (is_merged_file(path)) {
-		return read_concat(fi->fh, buf, size, offset);
-	} else {
-		rv = pread(fi->fh, buf, size, offset);
-		if (rv < 0) {
-			return -errno;
-		}
+        concat * c = get_concat(fi->fh);
+        if (c && c->valid())
+            return read_concat(fi->fh, buf, size, offset);
 	}
+
+    rv = pread(fi->fh, buf, size, offset);
+    if (rv < 0) {
+        return -errno;
+    }
 	return rv;
 }
 
@@ -216,10 +219,9 @@ static int m_getattr(const char *path, struct stat *stbuf)
 		return -errno;
 
 	if (is_merged_file(path)) {
-        concat * c = create_concat(0, path);
-        if (nullptr == c)
-            return -errno;
-		stbuf->st_size = c->getMergedSize();
+        concat * c = create_concat(0, path, false);
+        if (c->valid())
+            stbuf->st_size = c->getMergedSize();
 		delete c;
 	}
 
@@ -284,12 +286,13 @@ static int m_rmdir(const char *path)
 
 static int m_symlink(const char *path, const char * link)
 {
-	int rv;
+	int rv = 0;
 	char flink[PATH_MAX];
 
 	snprintf(flink, sizeof(flink), "%s/%s", src_dir, path);
-
+#ifndef __CYGWIN__
 	rv = symlink(path, flink);
+#endif // __CYGWIN__
 	if (rv < 0) {
 		return -errno;
 	}
@@ -425,8 +428,9 @@ static int m_readlink(const char *path, char *link, size_t size)
 	char fpath[PATH_MAX];
 
 	snprintf(fpath, sizeof(fpath), "%s/%s", src_dir, path);
-
+#ifndef __CYGWIN__
 	rv = readlink(fpath, link, size - 1);
+#endif // __CYGWIN__
 	if (rv < 0) {
 		rv = -errno;
 	} else {
