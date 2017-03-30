@@ -192,7 +192,7 @@ static int m_read(const char *path, char *buf, size_t size, off_t offset,
         debug_print("read file: [%ld-%ld] %s \n", offset, size, path);
         concat * c = get_concat(fi->fh);
         if (c && c->valid())
-            return read_concat(fi->fh, buf, size, offset);
+            return read_concat(fi->fh, buf, offset, size);
 	}
 
     rv = pread(fi->fh, buf, size, offset);
