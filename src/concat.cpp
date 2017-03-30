@@ -160,10 +160,10 @@ int concat::parsing(bool strict/* = true*/)
     int ret = 0;
     is_valid = false;
     try{
-        if (buffer[0] == '[' && buffer[file_size - 1] == ']') // json
+        //if (buffer[0] == '[' && buffer[file_size - 1] == ']') // json
             ret = parseJson(strict);
-        else
-            ret = parseBinary(strict);
+        //else
+        //    ret = parseBinary(strict);
         if (ret > 0) is_valid = true;
     } catch(exception &e){
         throw_exception(e.what());
