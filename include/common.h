@@ -17,7 +17,7 @@
 #ifdef __CYGWIN__
     // windows code goes here
     #define FUSE_USE_VERSION 30
-    #define _FILE_OFFSET_BITS 64
+
 #else
 
 #endif

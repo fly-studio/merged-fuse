@@ -2,11 +2,11 @@ CXX = g++
 LD = g++
 
 INC = -Iinclude
-CFLAGS = -Wall -std=c++11 -g -O2
+CFLAGS = -Wall -std=c++11 -g -O2 -D_FILE_OFFSET_BITS=64
 RESINC = 
 LIBDIR = 
 LIB = 
-LDFLAGS = `pkg-config fuse --cflags --libs` -s
+LDFLAGS = `pkg-config fuse --cflags --libs` -s 
 OBJDIR = obj
 OUT = bin/merged-fuse
 DEP = 
