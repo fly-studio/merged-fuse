@@ -23,7 +23,7 @@ So, you can save so many disk space.
 abcdefghi
 ```
 
-Make a file named `/the/mounted/dir/`1-merged-.txt, 
+Make a file named `/the/mounted/dir/`1-merged-.txt,
 
 `-merged-` is a special words in the file name, and the content is
 
@@ -49,7 +49,7 @@ So it virtual merges two files, with a json, and output the merged content.
 
 > Of course, this plugin builded for **BIG SIZE** files. eg: `mkv, mp4`,
 >
-> Or so many **BIG SIZE** copies with a few difference. eg: program copies(with different biz channel ID) 
+> Or so many **BIG SIZE** copies with a few difference. eg: program copies(with different biz channel ID)
 
 # Install
 It needs GCC 4.9, [Install GCC 4.9 in CentOS 6/7](#install-gcc-49-in-centos-67)
@@ -61,7 +61,7 @@ yum install fuse fuse-devel
 
 cd merged-fuse
 make
-mv bin/merged-fuse /usr/bin/
+make install
 ```
 
 # Usage
@@ -97,7 +97,7 @@ make your config
 > see http://manpages.ubuntu.com/manpages/precise/man8/mount.fuse.8.html
 
 ```
-vim  /etc/fuse.conf 
+vim  /etc/fuse.conf
 ```
 ```
 user_allow_other
@@ -154,7 +154,7 @@ Write
 - length [short]: max value is 1024
 
     If **length** is greater than the offset to the end of file,
-    it's fine, the replaced content will be truncate, and it'll not overflow. 
+    it's fine, the replaced content will be truncate, and it'll not overflow.
 
 
 - content [string]: BASE64, the repleaced content(supported Binary)
