@@ -38,6 +38,7 @@ Make a file named `/the/mounted/dir/`1-merged-.txt,
 ```
 
 `cat /the/mounted/dir/1-merged-.txt`, output:
+
 ```text
 12345678abcdefghi
 ```
@@ -45,11 +46,14 @@ Make a file named `/the/mounted/dir/`1-merged-.txt,
 So it virtual merges two files, with a json, and output the merged content.
 
 > Of course, this plugin builded for **BIG SIZE** files. eg: `mkv, mp4`,
-
+>
 > Or so many **BIG SIZE** copies with a few difference. eg: program copies(with different biz channel ID) 
 
 # Install
 It needs GCC 4.9, [Install GCC 4.9 in CentOS 6/7](#install-gcc-49-in-centos-67)
+
+> modern C++ 11
+
 ```bash
 yum install fuse fuse-devel
 
@@ -73,10 +77,34 @@ You can **Write** your `-merged-` file in source dir
 
 And **Read** your `-merged-` file in mounted dir after `merged-fuse`
 
-## Run
+## Run in background
 ```bash
 merged-fuse /the/src/dir/ /the/mount/dir/
 ```
+## Run in debugging
+
+> see https://www.cs.hmc.edu/~geoff/classes/hmc.cs135.201109/homework/fuse/fuse_doc.html#other-options
+
+```
+merged-fuse /the/src/dir/ /the/mount/dir/ -d
+```
+
+## Run in other user
+make your config
+
+> see http://manpages.ubuntu.com/manpages/precise/man8/mount.fuse.8.html
+
+```
+vim  /etc/fuse.conf 
+```
+```
+user_allow_other
+```
+run with user 'apache' and allow other user read/write
+```
+sudo -u apache merged-fuse /the/src/dir/ /the/mount/dir/ -o allow_other
+```
+
 ## Stop
 ```bash
 umount /the/mounted/dir/
