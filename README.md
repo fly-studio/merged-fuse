@@ -7,6 +7,8 @@ But it's not a really merged file, it only output the merged content when you us
 
 So, you can save so many disk space.
 
+> the code is base by https://github.com/schlaile/concatfs, Thanks!
+
 **Example**
 
 `/the/src/dir/`1.txt
