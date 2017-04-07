@@ -7,23 +7,23 @@ But it's not a really merged file, it only output the merged content when you us
 
 So, you can save so many disk space.
 
-> the code is base by https://github.com/schlaile/concatfs, Thanks!
+> the code is based by https://github.com/schlaile/concatfs, Thanks!
 
 **Example**
 
-`/the/src/dir/`1.txt
+create `/the/src/dir/`1.txt
 
 ```text
 12345678
 ```
 
-`/the/src/dir/`2.txt
+create `/the/src/dir/`2.txt
 
 ```text
 abcdefghi
 ```
 
-Make a file named `/the/mounted/dir/`1-merged-.txt,
+create a file named `/the/mounted/dir/`1-merged-.txt,
 
 `-merged-` is a special words in the file name, and the content is
 
@@ -45,11 +45,20 @@ Make a file named `/the/mounted/dir/`1-merged-.txt,
 12345678abcdefghi
 ```
 
-So it virtual merges two files, with a json, and output the merged content.
+So it virtual merges two files, with a json, and output the merged content when reading.
 
-> Of course, this plugin builded for **BIG SIZE** files. eg: `mkv, mp4`,
+> Of course, this plugin builds for **BIG SIZE** files. eg: `mkv, mp4`,
 >
 > Or so many **BIG SIZE** copies with a few difference. eg: program copies(with different biz channel ID)
+
+# FEATURES
+- Runs in userspace (FUSE);
+- Files with the string `-merged-` anywhere in the filename are considered concatenation description special files;
+- JSON format;
+- Save disk space;
+- Virtual merge files;
+- Virtual replace file's content.
+- Auto mount in fstab at Boot
 
 # Install
 It needs GCC 4.9, [Install GCC 4.9 in CentOS 6/7](#install-gcc-49-in-centos-67)
@@ -64,6 +73,11 @@ make
 make install
 ```
 
+Uninstall
+```
+make uninstall
+```
+
 # Usage
 ## Directories
 It's a FUSE plugin, so it uses two directories:
@@ -75,9 +89,9 @@ mkdir /the/src/dir
 mkdir /the/mounted/dir
 ```
 
-You can **Write** your `-merged-` file in source dir
+You can **Write** your `-merged-` file at source dir
 
-And **Read** your `-merged-` file in mounted dir after `merged-fuse`
+And **Read** your `-merged-` file at mounted dir after `merged-fuse` or `fstab`
 
 ## Run in background
 ```bash
@@ -85,20 +99,18 @@ merged-fuse /the/src/dir/ /the/mount/dir/
 ```
 ## Run in debugging
 
-> see https://www.cs.hmc.edu/~geoff/classes/hmc.cs135.201109/homework/fuse/fuse_doc.html#other-options
+> see http://man7.org/linux/man-pages/man8/mount.fuse.8.html
+> https://www.cs.hmc.edu/~geoff/classes/hmc.cs135.201109/homework/fuse/fuse_doc.html#other-options
 
 ```
 merged-fuse /the/src/dir/ /the/mount/dir/ -d
 ```
 
 ## Run in other user
-make your config
+create your config to  `/etc/fuse.conf`
 
 > see http://manpages.ubuntu.com/manpages/precise/man8/mount.fuse.8.html
 
-```
-vim  /etc/fuse.conf
-```
 ```
 user_allow_other
 ```
@@ -112,10 +124,17 @@ sudo -u apache merged-fuse /the/src/dir/ /the/mount/dir/ -o allow_other
 umount /the/mounted/dir/
 ```
 
+## Register to fstab
+To have the pool mounted at boot or otherwise accessable from related tools use `/etc/fstab.`
+```bash
+# <file system>    <mount point>     <type>            <options>             <dump>  <pass>
+ /the/src/dir      /the/mounted/dir  fuse.merged-fuse  defaults,allow_other  0       0
+```
+
 # Methods
 
 ## MERGE
-Write
+Write at src dir
 ```bash
 /the/src/dir/game.of.thrones-merge-.mp4
 ```
@@ -133,14 +152,14 @@ Write
     }
 ]
 ```
-Read
+Read at mounted dir
 
 ```bash
 /the/mounted/dir/game.of.thrones-merge-.mp4
 ```
 
 ## REPLACE
-Write
+Write at src dir
 ```bash
 /the/src/dir/1-merge-.zip
 ```
@@ -183,7 +202,7 @@ Write
     }
 ]
 ```
-Read
+Read at mounted dir
 
 ```bash
 /the/mounted/dir/1-merge-.zip
@@ -198,8 +217,20 @@ $ yum install devtoolset-3-binutils devtoolset-3-gcc devtoolset-3-gcc-c++
 # Backup your old gcc
 $ mv /usr/bin/gcc /usr/bin/gcc-v4.4.7
 $ mv /usr/bin/g++ /usr/bin/g++-v4.4.7
+$ mv /usr/bin/cc /usr/bin/cc-v4.4.7
 
 $ ln -s /opt/rh/devtoolset-3/root/usr/bin/gcc /usr/bin/gcc
 $ ln -s /opt/rh/devtoolset-3/root/usr/bin/gcc /usr/bin/cc
 $ ln -s /opt/rh/devtoolset-3/root/usr/bin/g++ /usr/bin/g++
+```
+If you cannot install `centos-release-scl-rh`, install this repo first.
+```
+cat > /etc/yum.repos.d/CentOS-Sclo-RH.repo << EOF
+[centos-sclo-rh]
+name=CentOS-$releasever - SCLo rh
+baseurl=http://mirror.centos.org/centos/$releasever/sclo/$basearch/rh/
+gpgcheck=0
+enabled=1
+#gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo
+EOF
 ```

@@ -490,7 +490,7 @@ static void usage()
 	\tWARNING: When -f is given, Fuse's working directory is the directory you were in when you started it. \n\
 	\tWithout -f, Fuse changes directories to \"/\". This will screw you up if you use relative pathnames.\n \
 	-o:\n \
-	\tfuse-options, see http://manpages.ubuntu.com/manpages/precise/man8/mount.fuse.8.html");
+	\tfuse-options, see http://man7.org/linux/man-pages/man8/mount.fuse.8.html#OPTIONS");
 	exit(-1);
 }
 
