@@ -13,7 +13,8 @@
 #include <algorithm>
 #include "json.hpp"
 #include "base64.h"
-#include "int128.hpp"
+#include "compare.hpp"
+
 
 using namespace std;
 using json = nlohmann::json;
@@ -66,7 +67,7 @@ long long concat::read(void * buf, off_t offset, size_t count)
         offset -= it->file_size;
 
     // cross files
-    for(;it != chunks.end() && count > it->file_size - offset; ++it)
+    for (; it != chunks.end() && sweet::greater(count , it->file_size - offset); ++it)
     {
         ssize_t rv = pread(it->file_descriptor, buf, it->file_size - offset, offset);
         if (rv == it->file_size - offset) {
@@ -400,7 +401,7 @@ int concat::parseJson(bool strict /*= true*/)
                     std::vector<BYTE> decode = base64_decode(content);
                     debug_print("base64:%s\n", content.c_str());
 
-                    if (decode.size() < content_length)
+                    if (sweet::less(decode.size(), content_length))
                         return throw_exception("replaced content base64decode error.");
 
                     char * str = new char[content_length + 1];
