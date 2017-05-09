@@ -483,14 +483,14 @@ static int m_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
 static void usage()
 {
 	fprintf(stderr, "Usage: merged-fuse src-dir mounted-dir [-d] [-f] [-o fuse-options...]\n \
-	-d: \n \
-	\tEnable debugging output (implies -f).\n \
-	-f: \n \
-	\tRun in foreground; this is useful if you're running under a debugger.\n \
-	\tWARNING: When -f is given, Fuse's working directory is the directory you were in when you started it. \n\
-	\tWithout -f, Fuse changes directories to \"/\". This will screw you up if you use relative pathnames.\n \
-	-o:\n \
-	\tfuse-options, see http://man7.org/linux/man-pages/man8/mount.fuse.8.html#OPTIONS");
+-d: \n \
+\tEnable debugging output (implies -f).\n \
+-f: \n \
+\tRun in foreground; this is useful if you're running under a debugger.\n \
+\tWARNING: When -f is given, Fuse's working directory is the directory you were in when you started it. \n\
+\tWithout -f, Fuse changes directories to \"/\". This will screw you up if you use relative pathnames.\n \
+-o:\n \
+\tfuse-options, see http://man7.org/linux/man-pages/man8/mount.fuse.8.html#OPTIONS\n");
 	exit(-1);
 }
 
