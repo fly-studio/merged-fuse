@@ -515,7 +515,7 @@ int main(int argc, char **argv) {
 			 cwd, argv[1]);
 	}
 
-	debug_print("mounting src_dir: %s\n", src_dir);
+	debug_print("Mounting src_dir: %s, Success.\n", src_dir);
 
 	pthread_mutex_init(&the_lock, NULL);
 

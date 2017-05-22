@@ -1,3 +1,5 @@
+[TOC]
+
 # Introduce
 It's a fuse plugin, and it can virtual merges files, and virtual replaces bytes.
 
@@ -207,6 +209,32 @@ Read at mounted dir
 ```bash
 /the/mounted/dir/1-merge-.zip
 ```
+
+# Permission
+## fuse: failed to exec fusermount: Permission denied
+
+change `/dev/fuse`'s group to fuse
+
+```shell
+chgrp fuse /dev/fuse
+```
+
+add your user to fuse's group, e.g. `nobody`, `apache`
+
+```bash
+usermod -a -G fuse root
+usermod -a -G fuse nobody
+usermod -a -G fuse apache
+```
+
+## fusermount: user has no write access to mountpoint `/your/mounted/dir/`
+
+change your dir's user/group to who merged-fuse running, eg: `apache`
+
+```
+chown apache:apache /your/mounted/dir/
+```
+
 
 # Install GCC 4.9 in CentOS 6/7
 ```bash
